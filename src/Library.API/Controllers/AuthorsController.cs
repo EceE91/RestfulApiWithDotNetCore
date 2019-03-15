@@ -41,17 +41,28 @@ namespace Library.API.Controllers
             // use automapper instead
             var authors = Mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo);
 
-            return new JsonResult(authors);
+            //return new JsonResult(authors);
+            return Ok(authors); // return 200 if successful
         }
 
 
         [HttpGet("{id}")]
         public ActionResult GetAuthor(Guid id)
         {
-            var authorFromRepo = _libraryRepository.GetAuthor(id);
+          // since we added a exception handler middleware we do not need try-catch anymore
+          //  try
+          //  {
+                var authorFromRepo = _libraryRepository.GetAuthor(id);
 
-            var author = Mapper.Map<AuthorDto>(authorFromRepo);
-            return new JsonResult(author);
+                if (authorFromRepo == null)
+                    return NotFound();
+
+                var author = Mapper.Map<AuthorDto>(authorFromRepo);
+                return Ok(author);
+          //  }catch(Exception e)
+          //  {
+                return StatusCode(500, "An unexpected error happened. Try again later");
+          //  }
         }
     }
 }

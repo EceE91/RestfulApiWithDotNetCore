@@ -52,13 +52,22 @@ namespace Library.API
         {
             loggerFactory.AddConsole();
 
+            // middleware
             if (env.IsDevelopment())
             {
+                // use stacktrace to see error in dev env
                 app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler();
+                // use exception handler to see error in production env
+                app.UseExceptionHandler(appBuilder => {
+                    appBuilder.Run(async context =>
+                    {
+                        context.Response.StatusCode = 500; // server error
+                        await context.Response.WriteAsync("An unexpected error happened. Try again later");
+                    });
+                });
             }
 
             // to use automapper, first download automapper nuget package and then
