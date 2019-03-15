@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Library.API.Services;
 using Library.API.Entities;
 using Microsoft.EntityFrameworkCore;
+using Library.API.Helpers;
 
 namespace Library.API
 {
@@ -59,6 +60,23 @@ namespace Library.API
             {
                 app.UseExceptionHandler();
             }
+
+            // to use automapper, first download automapper nuget package and then
+            // here in Configure function in Startup.cs add mapping properties
+            // from source to destination
+            // for automapping, it requires property name in the source and destination
+            // to be the same so they can be matched and then be able to mapped
+            AutoMapper.Mapper.Initialize(
+                cfg => { cfg.CreateMap<Entities.Author, Models.AuthorDto>()
+                    .ForMember(dest => dest.Name, opt => opt.MapFrom(source => $"{source.FirstName} {source.LastName}")) // projection
+                    .ForMember(dest => dest.Age, opt => opt.MapFrom(source => source.DateOfBirth.GetCurrentAge()));
+            });
+
+            // formember is called projection
+            // since properties in source and destination must be the same for the mapping
+            // but since we need in dto class current age rather than datofbirth and first+lastname of
+            // author, we used formember for mapping without error
+
 
             libraryContext.EnsureSeedDataForContext();
 
