@@ -61,7 +61,7 @@ namespace Library.API.Controllers
                 return Ok(author);
           //  }catch(Exception e)
           //  {
-                return StatusCode(500, "An unexpected error happened. Try again later");
+               // return StatusCode(500, "An unexpected error happened. Try again later");
           //  }
         }
     }

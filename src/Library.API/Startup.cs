@@ -12,6 +12,7 @@ using Library.API.Services;
 using Library.API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Library.API.Helpers;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Library.API
 {
@@ -33,7 +34,13 @@ namespace Library.API
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
-        {
+        {           
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Ece's API", Version = "v1" });
+            });
+
             services.AddMvc();
 
             // register the DbContext on the container, getting the connection string from
@@ -50,6 +57,18 @@ namespace Library.API
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
             ILoggerFactory loggerFactory, LibraryContext libraryContext)
         {
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ece's API V1");
+                c.RoutePrefix = string.Empty; // by adding this, swagger is shows up as soon as we type http://localhost:<port>/sss
+            });
+
             loggerFactory.AddConsole();
 
             // middleware
@@ -79,6 +98,8 @@ namespace Library.API
                 cfg => { cfg.CreateMap<Entities.Author, Models.AuthorDto>()
                     .ForMember(dest => dest.Name, opt => opt.MapFrom(source => $"{source.FirstName} {source.LastName}")) // projection
                     .ForMember(dest => dest.Age, opt => opt.MapFrom(source => source.DateOfBirth.GetCurrentAge()));
+
+                    cfg.CreateMap<Entities.Book, Models.BookDto>();
             });
 
             // formember is called projection
