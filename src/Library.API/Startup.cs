@@ -13,6 +13,7 @@ using Library.API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Library.API.Helpers;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace Library.API
 {
@@ -41,7 +42,11 @@ namespace Library.API
                 c.SwaggerDoc("v1", new Info { Title = "Ece's API", Version = "v1" });
             });
 
-            services.AddMvc();
+            services.AddMvc(setupAction =>
+            {
+                setupAction.ReturnHttpNotAcceptable = true; // return 406 not acceptable if the format is not right (e.g: json instead of xml)
+                setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()); // accept xml format
+            });
 
             // register the DbContext on the container, getting the connection string from
             // appSettings (note: use this during development; in a production environment,
