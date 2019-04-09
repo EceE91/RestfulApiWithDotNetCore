@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Library.API.Helpers;
 using AutoMapper;
+using Library.API.Entities;
 
 namespace Library.API.Controllers
 {
@@ -46,7 +47,7 @@ namespace Library.API.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}",Name ="GetAuthor")]
         public ActionResult GetAuthor(Guid id)
         {
           // since we added a exception handler middleware we do not need try-catch anymore
@@ -64,5 +65,35 @@ namespace Library.API.Controllers
                // return StatusCode(500, "An unexpected error happened. Try again later");
           //  }
         }
+
+
+        // create author POST request
+        [HttpPost()]
+        public IActionResult CreateAuthor([FromBody] AuthorForCreationDto author)
+        {
+             if(author == null)
+            {
+                return BadRequest(); // return 400 error
+            }
+
+            var authorEntity = Mapper.Map<Author>(author);
+
+            // the entity has not been added to the database yet, it has been added to the dbcontext
+            // which represents a session with the database.
+            _libraryRepository.AddAuthor(authorEntity);
+            // To persist the changes we have to save on the repo.
+            // if it fails we will return 500 error
+
+            if (!_libraryRepository.Save())
+            {
+                throw new Exception("Creating an author failed on save");
+               // return StatusCode(500, "An error occured");
+            }
+
+            var authorToReturn = Mapper.Map<AuthorDto>(authorEntity);
+            return CreatedAtRoute("GetAuthor", new { id = authorToReturn.Id}, authorToReturn);
+        }
+
+
     }
 }

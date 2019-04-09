@@ -105,7 +105,10 @@ namespace Library.API
                     .ForMember(dest => dest.Age, opt => opt.MapFrom(source => source.DateOfBirth.GetCurrentAge()));
 
                     cfg.CreateMap<Entities.Book, Models.BookDto>();
-            });
+
+                    cfg.CreateMap<Models.AuthorForCreationDto, Entities.Author>();
+                    cfg.CreateMap<Models.BookForCreationDto, Entities.Book>();
+                });
 
             // formember is called projection
             // since properties in source and destination must be the same for the mapping
