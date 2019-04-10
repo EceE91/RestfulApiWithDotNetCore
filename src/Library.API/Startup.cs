@@ -45,7 +45,8 @@ namespace Library.API
             services.AddMvc(setupAction =>
             {
                 setupAction.ReturnHttpNotAcceptable = true; // return 406 not acceptable if the format is not right (e.g: json instead of xml)
-                setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()); // accept xml format
+                setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()); // accept header as xml format
+                setupAction.InputFormatters.Add((new XmlDataContractSerializerInputFormatter())); // content-type header as xml
             });
 
             // register the DbContext on the container, getting the connection string from
