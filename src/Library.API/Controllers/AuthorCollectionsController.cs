@@ -21,51 +21,51 @@ namespace Library.API.Controllers
             _libraryRepository = libraryRepository;
         }
 
-        // we get AuthorForCreationDto as type IEnumerable (list)
-        // because this time we want to create a list of authors
-        [HttpPost]
-        public IActionResult CreateAuthorCollection([FromBody] IEnumerable<AuthorForCreationDto> authorCollection)
-        {
-            if(authorCollection == null)
-            {
-                return BadRequest();
-            }
+        //// we get AuthorForCreationDto as type IEnumerable (list)
+        //// because this time we want to create a list of authors
+        //[HttpPost()]
+        //public IActionResult CreateAuthorCollection([FromBody] IEnumerable<AuthorForCreationDto> authorCollection)
+        //{
+        //    if(authorCollection == null)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            var authorEntities = Mapper.Map<IEnumerable<Author>>(authorCollection);
+        //    var authorEntities = Mapper.Map<IEnumerable<Author>>(authorCollection);
 
-            foreach (var item in authorEntities)
-            {
-                _libraryRepository.AddAuthor(item);
-            }
+        //    foreach (var item in authorEntities)
+        //    {
+        //        _libraryRepository.AddAuthor(item);
+        //    }
 
-            if (!_libraryRepository.Save())
-            {
-                throw new Exception("Creating author collection is failed"); 
-            }
+        //    if (!_libraryRepository.Save())
+        //    {
+        //        throw new Exception("Creating author collection is failed"); 
+        //    }
 
-            var authorCollectionToReturn = Mapper.Map<IEnumerable<AuthorDto>>(authorEntities);
-            var idsAsString = string.Join(",", authorCollectionToReturn.Select(x => x.Id));            
-            return CreatedAtRoute("GetAuthorCollection", new { ids = idsAsString}, authorCollectionToReturn);
-            //return Ok();
-        }
+        //    var authorCollectionToReturn = Mapper.Map<IEnumerable<AuthorDto>>(authorEntities);
+        //    var idsAsString = string.Join(",", authorCollectionToReturn.Select(x => x.Id));            
+        //    return CreatedAtRoute("GetAuthorCollection", new { ids = idsAsString}, authorCollectionToReturn);
+        //    //return Ok();
+        //}
 
-        [HttpGet("({ids})", Name = "GetAuthorCollection")]
-        public IActionResult GetAuthorCollection([ModelBinder(binderType:typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
-        {
-            if(ids == null)
-            {
-                return BadRequest();
-            }
+        //[HttpGet("({ids})", Name = "GetAuthorCollection")]
+        //public IActionResult GetAuthorCollection([ModelBinder(binderType:typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
+        //{
+        //    if(ids == null)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            var authorEntities = _libraryRepository.GetAuthors(ids);
+        //    var authorEntities = _libraryRepository.GetAuthors(ids);
 
-            // check if all the authors have been found
-            if (ids.Count() != authorEntities.Count())
-                return NotFound();
+        //    // check if all the authors have been found
+        //    if (ids.Count() != authorEntities.Count())
+        //        return NotFound();
 
-            var authorsToReturn = Mapper.Map<IEnumerable<AuthorDto>>(authorEntities);
-            return Ok(authorsToReturn);
-        }
+        //    var authorsToReturn = Mapper.Map<IEnumerable<AuthorDto>>(authorEntities);
+        //    return Ok(authorsToReturn);
+        //}
 
     }
 }

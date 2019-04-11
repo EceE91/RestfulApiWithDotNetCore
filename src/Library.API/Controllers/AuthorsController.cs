@@ -95,16 +95,16 @@ namespace Library.API.Controllers
             return CreatedAtRoute("GetAuthor", new { id = authorToReturn.Id}, authorToReturn);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult BlockAuthorCreation(Guid id)
-        {
-            if (_libraryRepository.AuthorExists(id))
-            {
-                return new StatusCodeResult(StatusCodes.Status409Conflict);
-            }
+        //[HttpGet("{id}")]
+        //public IActionResult BlockAuthorCreation(Guid id)
+        //{
+        //    if (_libraryRepository.AuthorExists(id))
+        //    {
+        //        return new StatusCodeResult(StatusCodes.Status409Conflict);
+        //    }
 
-            return NotFound();
-        }
+        //    return NotFound();
+        //}
 
 
         [HttpDelete("{id}")]

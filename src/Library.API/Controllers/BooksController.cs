@@ -87,7 +87,7 @@ namespace Library.API.Controllers
 
             var bookForAuthorFromRepo = _libraryRepository.GetBookForAuthor(authorId, id);
             if (bookForAuthorFromRepo == null)
-                NotFound();
+                return NotFound();
 
             _libraryRepository.DeleteBook(bookForAuthorFromRepo);
 
@@ -95,6 +95,32 @@ namespace Library.API.Controllers
                 throw new Exception($"Error deleting the book with author id {authorId}");
 
             return NoContent(); // 204 delete successful but no content has retured
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateBookForAuthor(Guid authorId, Guid id, [FromBody] BookForUpdateDto book )
+        {
+            if (book == null)
+                return NotFound();
+
+            if (!_libraryRepository.AuthorExists(authorId))
+                return NotFound();
+
+            var bookForAuthorFromRepo = _libraryRepository.GetBookForAuthor(authorId, id);
+            if (bookForAuthorFromRepo == null)
+               return NotFound();
+
+            // map
+
+            // apply update
+
+            // map back to entity 
+            Mapper.Map(book, bookForAuthorFromRepo);
+            _libraryRepository.UpdateBookForAuthor(bookForAuthorFromRepo);
+            if (!_libraryRepository.Save())
+                throw new Exception($"Error updating book with bookid {id}");
+
+            return NoContent();
         }
 
     }
