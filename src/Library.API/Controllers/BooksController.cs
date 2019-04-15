@@ -2,6 +2,7 @@
 using Library.API.Entities;
 using Library.API.Models;
 using Library.API.Services;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -97,18 +98,34 @@ namespace Library.API.Controllers
             return NoContent(); // 204 delete successful but no content has retured
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}")] // put is idempotent
         public IActionResult UpdateBookForAuthor(Guid authorId, Guid id, [FromBody] BookForUpdateDto book )
         {
             if (book == null)
-                return NotFound();
+                return BadRequest();
 
             if (!_libraryRepository.AuthorExists(authorId))
                 return NotFound();
 
             var bookForAuthorFromRepo = _libraryRepository.GetBookForAuthor(authorId, id);
             if (bookForAuthorFromRepo == null)
-               return NotFound();
+            {
+                //return NotFound();
+                // upserting (insert or update), if the bookid doesn't exist then create it
+                var bookToAdd = Mapper.Map<Book>(book);
+                bookToAdd.Id = id;
+
+                _libraryRepository.AddBookForAuthor(authorId, bookToAdd);
+
+                if (!_libraryRepository.Save())
+                {
+                    throw new Exception($"Upserting fails for bookid {id}");
+                }
+
+                var bookToReturn = Mapper.Map<BookDto>(bookToAdd);
+
+                return CreatedAtRoute("GetBookForAuthor", new { authorId =  authorId, id = bookToReturn.Id}, bookToReturn);
+            }
 
             // map
 
@@ -122,6 +139,62 @@ namespace Library.API.Controllers
 
             return NoContent();
         }
+
+        [HttpPatch("{id}")]
+        public IActionResult PartiallyUpdateBookForAuthor(Guid authorId, Guid id, 
+            [FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc)
+        {
+            // we use BookForUpdateDto as parameter because it contains ID, and ID can can be updated by mistake
+            if (patchDoc == null)
+                return BadRequest();
+
+            if (!_libraryRepository.AuthorExists(authorId))
+                return NotFound();
+
+
+            var bookForAuthorFromRepo = _libraryRepository.GetBookForAuthor(authorId, id); // return bookentity
+
+            if (bookForAuthorFromRepo == null)
+            {
+                // upsertig
+                var bookDto = new BookForUpdateDto();
+                patchDoc.ApplyTo(bookDto);
+
+                var bookToAdd = Mapper.Map<Book>(bookDto);
+                bookToAdd.Id = id;
+
+                _libraryRepository.AddBookForAuthor(authorId, bookToAdd);
+
+                if (!_libraryRepository.Save())
+                {
+                    throw new Exception($"An error occured while creating book with AuthorId {authorId}");
+                }
+
+                var bookToReturn = Mapper.Map<BookDto>(bookToAdd);
+                return CreatedAtRoute("GetBookForAuthor",new { authorId = authorId, id = bookToReturn.Id}, bookToReturn);
+            }
+
+            var bookToPatch = Mapper.Map<BookForUpdateDto>(bookForAuthorFromRepo);
+
+            patchDoc.ApplyTo(bookToPatch);
+
+            // add validation
+
+            Mapper.Map(bookToPatch, bookForAuthorFromRepo);
+
+            _libraryRepository.UpdateBookForAuthor(bookForAuthorFromRepo);
+            if (!_libraryRepository.Save())
+                throw new Exception($"Error patching book with bookid {id}");
+
+            // content-type is application-jsonpatch on postman
+            return NoContent();
+            //  {
+            //     "op": "replace",
+            //     "path": "/title", => replace only title
+            //     "value": "A Game of Thrones - Updated"
+            //}
+        }
+
 
     }
 }

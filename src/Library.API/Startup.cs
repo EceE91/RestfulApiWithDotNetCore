@@ -110,6 +110,7 @@ namespace Library.API
                     cfg.CreateMap<Models.AuthorForCreationDto, Entities.Author>();
                     cfg.CreateMap<Models.BookForCreationDto, Entities.Book>();
                     cfg.CreateMap<Models.BookForUpdateDto, Entities.Book>();
+                    cfg.CreateMap<Entities.Book, Models.BookForUpdateDto>();
                 });
 
             // formember is called projection
