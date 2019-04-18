@@ -61,6 +61,17 @@ namespace Library.API.Controllers
                 return BadRequest(); // 400 - consumer made a mistake
             }
 
+            if(book.Description == book.Description)
+            {
+                ModelState.AddModelError(nameof(BookForCreationDto), "Title and description cannot be the same");
+            }
+
+            if (!ModelState.IsValid) // rules comes from data annotations in dto class
+            {
+                return new UnprocessableEntityObjectResult(ModelState);
+                //422 unprocessable entity error
+            }
+
             if (!_libraryRepository.AuthorExists(authorId))
             {
                 return NotFound();
