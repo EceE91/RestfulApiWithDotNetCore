@@ -61,7 +61,7 @@ namespace Library.API.Controllers
                 return BadRequest(); // 400 - consumer made a mistake
             }
 
-            if(book.Description == book.Description)
+            if(book.Title == book.Description)
             {
                 ModelState.AddModelError(nameof(BookForCreationDto), "Title and description cannot be the same");
             }
@@ -169,7 +169,15 @@ namespace Library.API.Controllers
             {
                 // upsertig
                 var bookDto = new BookForUpdateDto();
-                patchDoc.ApplyTo(bookDto);
+                patchDoc.ApplyTo(bookDto,ModelState);
+
+                if (bookDto.Title == bookDto.Description)
+                    ModelState.AddModelError(nameof(BookForUpdateDto), "Description and title cannot be the same");
+
+                TryValidateModel(bookDto);
+
+                if (!ModelState.IsValid)
+                    return new UnprocessableEntityObjectResult(ModelState); // 422 unprocessable error
 
                 var bookToAdd = Mapper.Map<Book>(bookDto);
                 bookToAdd.Id = id;
@@ -187,7 +195,15 @@ namespace Library.API.Controllers
 
             var bookToPatch = Mapper.Map<BookForUpdateDto>(bookForAuthorFromRepo);
 
-            patchDoc.ApplyTo(bookToPatch);
+            patchDoc.ApplyTo(bookToPatch, ModelState);
+
+            if(bookToPatch.Title == bookToPatch.Description)
+                ModelState.AddModelError(nameof(BookForUpdateDto),"Description and title cannot be the same");
+
+            TryValidateModel(bookToPatch);
+
+            if(!ModelState.IsValid)
+                return new UnprocessableEntityObjectResult(ModelState); // 422 unprocessable error
 
             // add validation
 
