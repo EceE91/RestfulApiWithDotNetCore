@@ -8,6 +8,7 @@ using Library.API.Services;
 using Library.API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Library.API.Helpers;
+using Microsoft.AspNetCore.Diagnostics;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Mvc.Formatters;
 
@@ -72,6 +73,7 @@ namespace Library.API
             });
 
             loggerFactory.AddConsole();
+            loggerFactory.AddDebug(LogLevel.Information);
 
             // middleware
             if (env.IsDevelopment())
@@ -85,6 +87,14 @@ namespace Library.API
                 app.UseExceptionHandler(appBuilder => {
                     appBuilder.Run(async context =>
                     {
+                        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+                        if (exceptionHandlerFeature != null)
+                        {
+                            // catches invalid patch error
+                            var logger = loggerFactory.CreateLogger("Global Exception Logger");
+                            logger.LogError(500, exceptionHandlerFeature.Error, exceptionHandlerFeature.Error.Message);
+                        }
+
                         context.Response.StatusCode = 500; // server error
                         await context.Response.WriteAsync("An unexpected error happened. Try again later");
                     });

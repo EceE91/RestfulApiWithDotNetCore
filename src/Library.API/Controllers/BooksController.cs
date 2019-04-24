@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Library.API.Controllers
 {
@@ -14,9 +15,13 @@ namespace Library.API.Controllers
     {
         // constructor injection
         private ILibraryRepository _libraryRepository;
+        private ILogger<BooksController> _logger;
 
-        public BooksController(ILibraryRepository libraryRepository)
+        public BooksController(ILibraryRepository libraryRepository,
+            ILogger<BooksController> logger)
+
         {
+            _logger = logger;
             _libraryRepository = libraryRepository;
         }
 
@@ -103,6 +108,8 @@ namespace Library.API.Controllers
 
             if (!_libraryRepository.Save())
                 throw new Exception($"Error deleting the book with author id {authorId}");
+
+            _logger.LogInformation(100,$"Book {id} for author {authorId} was deleted.");
 
             return NoContent(); // 204 delete successful but no content has retured
         }
@@ -193,9 +200,12 @@ namespace Library.API.Controllers
 
             var bookToPatch = Mapper.Map<BookForUpdateDto>(bookForAuthorFromRepo);
 
-            patchDoc.ApplyTo(bookToPatch, ModelState);
+            //patchDoc.ApplyTo(bookToPatch, ModelState);
 
-            if(bookToPatch.Title == bookToPatch.Description)
+            // no need to add modelstate, since we added logger in configure method in startup.cs
+            patchDoc.ApplyTo(bookToPatch);
+
+            if (bookToPatch.Title == bookToPatch.Description)
                 ModelState.AddModelError(nameof(BookForUpdateDto),"Description and title cannot be the same");
 
             TryValidateModel(bookToPatch);
