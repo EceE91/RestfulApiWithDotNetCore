@@ -11,6 +11,8 @@ using Library.API.Helpers;
 using Microsoft.AspNetCore.Diagnostics;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using NLog.Extensions.Logging;
+
 
 namespace Library.API
 {
@@ -74,7 +76,9 @@ namespace Library.API
 
             loggerFactory.AddConsole();
             loggerFactory.AddDebug(LogLevel.Information);
-
+            //loggerFactory.AddProvider(new NLogLoggerProvider());
+            loggerFactory.AddNLog();
+           
             // middleware
             if (env.IsDevelopment())
             {
