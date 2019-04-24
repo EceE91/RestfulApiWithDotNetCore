@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Library.API.Controllers
 {
@@ -87,7 +85,7 @@ namespace Library.API.Controllers
             }
 
             var bookToReturn = Mapper.Map<BookDto>(bookEntity);
-            return CreatedAtRoute("GetBookForAuthor", new { authorId = authorId, id = bookToReturn.Id }, bookToReturn);
+            return CreatedAtRoute("GetBookForAuthor", new {authorId, id = bookToReturn.Id }, bookToReturn);
         }
 
 
@@ -135,7 +133,7 @@ namespace Library.API.Controllers
 
                 var bookToReturn = Mapper.Map<BookDto>(bookToAdd);
 
-                return CreatedAtRoute("GetBookForAuthor", new { authorId =  authorId, id = bookToReturn.Id}, bookToReturn);
+                return CreatedAtRoute("GetBookForAuthor", new {authorId, id = bookToReturn.Id}, bookToReturn);
             }
 
             // map
@@ -167,7 +165,7 @@ namespace Library.API.Controllers
 
             if (bookForAuthorFromRepo == null)
             {
-                // upsertig
+                // upserting
                 var bookDto = new BookForUpdateDto();
                 patchDoc.ApplyTo(bookDto,ModelState);
 
@@ -190,7 +188,7 @@ namespace Library.API.Controllers
                 }
 
                 var bookToReturn = Mapper.Map<BookDto>(bookToAdd);
-                return CreatedAtRoute("GetBookForAuthor",new { authorId = authorId, id = bookToReturn.Id}, bookToReturn);
+                return CreatedAtRoute("GetBookForAuthor",new {authorId, id = bookToReturn.Id}, bookToReturn);
             }
 
             var bookToPatch = Mapper.Map<BookForUpdateDto>(bookForAuthorFromRepo);

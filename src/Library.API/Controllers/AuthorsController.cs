@@ -3,12 +3,8 @@ using Library.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Library.API.Helpers;
 using AutoMapper;
 using Library.API.Entities;
-using Microsoft.AspNetCore.Http;
 
 namespace Library.API.Controllers
 {

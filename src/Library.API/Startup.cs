@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -101,21 +97,21 @@ namespace Library.API
             // for automapping, it requires property name in the source and destination
             // to be the same so they can be matched and then be able to mapped
             AutoMapper.Mapper.Initialize(
-                cfg => { cfg.CreateMap<Entities.Author, Models.AuthorDto>()
+                cfg => { cfg.CreateMap<Author, Models.AuthorDto>()
                     .ForMember(dest => dest.Name, opt => opt.MapFrom(source => $"{source.FirstName} {source.LastName}")) // projection
                     .ForMember(dest => dest.Age, opt => opt.MapFrom(source => source.DateOfBirth.GetCurrentAge()));
 
-                    cfg.CreateMap<Entities.Book, Models.BookDto>();
+                    cfg.CreateMap<Book, Models.BookDto>();
 
-                    cfg.CreateMap<Models.AuthorForCreationDto, Entities.Author>();
-                    cfg.CreateMap<Models.BookForCreationDto, Entities.Book>();
-                    cfg.CreateMap<Models.BookForUpdateDto, Entities.Book>();
-                    cfg.CreateMap<Entities.Book, Models.BookForUpdateDto>();
+                    cfg.CreateMap<Models.AuthorForCreationDto, Author>();
+                    cfg.CreateMap<Models.BookForCreationDto, Book>();
+                    cfg.CreateMap<Models.BookForUpdateDto, Book>();
+                    cfg.CreateMap<Book, Models.BookForUpdateDto>();
                 });
 
             // formember is called projection
             // since properties in source and destination must be the same for the mapping
-            // but since we need in dto class current age rather than datofbirth and first+lastname of
+            // but since we need in dto class current age rather than dateofbirth and first+lastname of
             // author, we used formember for mapping without error
 
 
