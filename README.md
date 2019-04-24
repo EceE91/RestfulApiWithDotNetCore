@@ -4,4 +4,4 @@ The built-in dependency injection system & logger, working with different enviro
 
 Swashbuckle is used in the project
 
-To install NLog in .net core apps; PM> Install-Package NLog.Web.AspNetCore
+To install NLog in .net core apps; PM> Install-Package NLog.Web.AspNetCore. To make nlog.config file writeable in project file, set build action to none and copy to output directory to copy always.
