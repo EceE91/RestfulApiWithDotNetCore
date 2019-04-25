@@ -1,4 +1,4 @@
-# Building a Library RESTful API with ASP.NET Core
+# Library RESTful API with ASP.NET Core
 
 The project contains a library system, there are books and their authors in the system. Users can fetch/get, update, create, delete books and related authors via restful services.
 
