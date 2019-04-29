@@ -15,5 +15,7 @@
             }
             set { _pageSize = (value > MaxPageSize) ? MaxPageSize : value; }
         }
+
+        public string Genre { get; set; }   // filter by genre   
     }
 }
