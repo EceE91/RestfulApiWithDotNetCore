@@ -11,11 +11,11 @@ namespace Library.API.Migrations
                 name: "Authors",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    DateOfBirth = table.Column<DateTimeOffset>(nullable: false),
-                    FirstName = table.Column<string>(maxLength: 50, nullable: false),
-                    Genre = table.Column<string>(maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(maxLength: 50, nullable: false)
+                    Id = table.Column<Guid>(),
+                    DateOfBirth = table.Column<DateTimeOffset>(),
+                    FirstName = table.Column<string>(maxLength: 50),
+                    Genre = table.Column<string>(maxLength: 50),
+                    LastName = table.Column<string>(maxLength: 50)
                 },
                 constraints: table =>
                 {
@@ -26,10 +26,10 @@ namespace Library.API.Migrations
                 name: "Books",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    AuthorId = table.Column<Guid>(nullable: false),
+                    Id = table.Column<Guid>(),
+                    AuthorId = table.Column<Guid>(),
                     Description = table.Column<string>(maxLength: 500, nullable: true),
-                    Title = table.Column<string>(maxLength: 100, nullable: false)
+                    Title = table.Column<string>(maxLength: 100)
                 },
                 constraints: table =>
                 {
