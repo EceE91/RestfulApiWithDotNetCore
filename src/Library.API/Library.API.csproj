@@ -42,6 +42,7 @@
     <PackageReference Include="NLog.Web" Version="4.8.1" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.12" />
   </ItemGroup>
 
   <ItemGroup>
