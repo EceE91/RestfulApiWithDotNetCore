@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using AutoMapper;
 using Library.API.Entities;
 using Library.API.Helpers;
+using Remotion.Linq.Clauses;
 
 namespace Library.API.Controllers
 {
@@ -63,6 +64,7 @@ namespace Library.API.Controllers
                 case ResourceUriType.PreviousPage:
                     return _urlHelper.Link("GetAuthors", new
                     {
+                        orderBy = authorsResourceParameters.OrderBy,
                         searchQuery = authorsResourceParameters.SearchQuery,
                         genre = authorsResourceParameters.Genre,
                         pageNumber = authorsResourceParameters.PageNumber - 1,
@@ -71,6 +73,7 @@ namespace Library.API.Controllers
                 case ResourceUriType.NextPage:
                     return _urlHelper.Link("GetAuthors", new
                     {
+                        orderBy = authorsResourceParameters.OrderBy,
                         searchQuery = authorsResourceParameters.SearchQuery,
                         genre = authorsResourceParameters.Genre,
                         pageNumber = authorsResourceParameters.PageNumber + 1,
@@ -80,6 +83,7 @@ namespace Library.API.Controllers
                 default:
                     return _urlHelper.Link("GetAuthors", new
                     {
+                        orderBy = authorsResourceParameters.OrderBy,
                         searchQuery = authorsResourceParameters.SearchQuery,
                         genre = authorsResourceParameters.Genre,
                         pageNumber = authorsResourceParameters.PageNumber,

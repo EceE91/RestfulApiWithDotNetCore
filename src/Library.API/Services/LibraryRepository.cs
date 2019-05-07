@@ -81,7 +81,6 @@ namespace Library.API.Services
             var collectionBeforePaging = _context.Authors.ApplySort(authorsResourceParameters.OrderBy
                 , _propertyMappingService.GetPropertyMapping<AuthorDto, Author>());
 
-
             if (!string.IsNullOrEmpty(authorsResourceParameters.Genre))
             {
                 // trim & ignore casing
