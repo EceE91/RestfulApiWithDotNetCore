@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using AutoMapper;
 using Library.API.Entities;
 using Library.API.Helpers;
-using Remotion.Linq.Clauses;
 
 namespace Library.API.Controllers
 {
@@ -16,12 +15,17 @@ namespace Library.API.Controllers
         private ILibraryRepository _libraryRepository;
         private IUrlHelper _urlHelper;
         private IPropertyMappingService _propertyMappingService;
+        private ITypeHelperService _typeHelperService;
 
-        public AuthorsController(ILibraryRepository libraryRepository, IUrlHelper urlHelper,IPropertyMappingService propertyMappingService)
+        public AuthorsController(ILibraryRepository libraryRepository, 
+            IUrlHelper urlHelper,
+            IPropertyMappingService propertyMappingService,
+            ITypeHelperService typeHelperService)
         {
             _libraryRepository = libraryRepository;
             _urlHelper = urlHelper;
             _propertyMappingService = propertyMappingService;
+            _typeHelperService = typeHelperService;
         }
 
         // yukarıya route ekleyerek bütün http methodlarının api/authors ile başlayacağını söylemiş olduk. HttpGet'e de birşey yazmayarak 
@@ -29,8 +33,12 @@ namespace Library.API.Controllers
         [HttpGet(Name = "GetAuthors")]
         public IActionResult GetAuthors(AuthorsResourceParameters authorsResourceParameters)
         {
-
             if (!_propertyMappingService.ValidMappingExistsFor<AuthorDto, Author>(authorsResourceParameters.OrderBy))
+            {
+                return BadRequest();
+            }
+
+            if (!_typeHelperService.TypeHasProperties<AuthorDto>(authorsResourceParameters.Fields))
             {
                 return BadRequest();
             }
@@ -72,6 +80,7 @@ namespace Library.API.Controllers
                 case ResourceUriType.PreviousPage:
                     return _urlHelper.Link("GetAuthors", new
                     {
+                        fields = authorsResourceParameters.Fields,
                         orderBy = authorsResourceParameters.OrderBy,
                         searchQuery = authorsResourceParameters.SearchQuery,
                         genre = authorsResourceParameters.Genre,
@@ -81,6 +90,7 @@ namespace Library.API.Controllers
                 case ResourceUriType.NextPage:
                     return _urlHelper.Link("GetAuthors", new
                     {
+                        fields = authorsResourceParameters.Fields,
                         orderBy = authorsResourceParameters.OrderBy,
                         searchQuery = authorsResourceParameters.SearchQuery,
                         genre = authorsResourceParameters.Genre,
@@ -91,6 +101,7 @@ namespace Library.API.Controllers
                 default:
                     return _urlHelper.Link("GetAuthors", new
                     {
+                        fields = authorsResourceParameters.Fields,
                         orderBy = authorsResourceParameters.OrderBy,
                         searchQuery = authorsResourceParameters.SearchQuery,
                         genre = authorsResourceParameters.Genre,

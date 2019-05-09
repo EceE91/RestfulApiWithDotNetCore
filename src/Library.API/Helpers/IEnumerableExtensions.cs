@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.Dynamic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Library.API.Helpers
 {
@@ -12,8 +9,8 @@ namespace Library.API.Helpers
     {
         public static IEnumerable<ExpandoObject> ShapeData<TSource>(this IEnumerable<TSource> source, string fields)
         {
-            if(source == null )
-                throw  new Exception("source");
+            if (source == null)
+                throw new Exception("source");
 
             var expandoObjectList = new List<ExpandoObject>();
 
@@ -50,7 +47,7 @@ namespace Library.API.Helpers
                         BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
                     if (propertyInfo == null)
-                        throw  new Exception($"Property {propertyName} wasn't found on {typeof(TSource)}");
+                        throw new Exception($"Property {propertyName} wasn't found on {typeof(TSource)}");
 
                     propertyInfoList.Add(propertyInfo);
                 }
@@ -68,15 +65,13 @@ namespace Library.API.Helpers
                     // GetValue returns the value of the property on the source object
                     var propertyValue = propertyInfo.GetValue(sourceObject);
 
-                    ((IDictionary<string,object>)dataShapedObject).Add(propertyInfo.Name, propertyValue);
+                    ((IDictionary<string, object>) dataShapedObject).Add(propertyInfo.Name, propertyValue);
                 }
-                
+
                 expandoObjectList.Add(dataShapedObject);
             }
-            
-        
+
+            return expandoObjectList;
         }
-
-
     }
 }

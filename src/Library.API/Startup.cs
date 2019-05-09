@@ -14,6 +14,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 
 
@@ -49,6 +50,9 @@ namespace Library.API
                 setupAction.ReturnHttpNotAcceptable = true; // return 406 not acceptable if the format is not right (e.g: json instead of xml)
                 setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()); // accept header as xml format
                 setupAction.InputFormatters.Add((new XmlDataContractSerializerInputFormatter())); // content-type header as xml
+            }).AddJsonOptions(options =>
+            {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
 
             // register the DbContext on the container, getting the connection string from
@@ -72,6 +76,7 @@ namespace Library.API
             );
 
             services.AddTransient<IPropertyMappingService, PropertyMappingService>();
+            services.AddTransient<ITypeHelperService,TypeHelperService>();
 
         }
 
