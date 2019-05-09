@@ -54,14 +54,14 @@ namespace Library.API.Controllers
                 totalPages = authorsFromRepo.TotalPages,
                 previousPageLink = previousPageLink,
                 nextPageLink = nextPageLink
-            };
+            }; 
 
             Response.Headers.Add("X-Pagination", 
                 Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetadata));
 
             var authors = Mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo);
 
-            return Ok(authors); // return 200 if successful
+            return Ok(authors.ShapeData(authorsResourceParameters.Fields)); // return 200 if successful
         }
 
         private string CreateAuthorsResourceUri(AuthorsResourceParameters authorsResourceParameters,
