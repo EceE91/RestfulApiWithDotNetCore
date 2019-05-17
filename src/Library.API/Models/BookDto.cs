@@ -2,7 +2,7 @@
 
 namespace Library.API.Models
 {
-    public class BookDto
+    public class BookDto : LinkedResourceBaseDto // so, we can add collection of links to the BookDto
     {
         public Guid Id { get; set; }
         public string Title { get; set; }

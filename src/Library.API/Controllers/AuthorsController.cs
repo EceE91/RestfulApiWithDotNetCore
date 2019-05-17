@@ -38,9 +38,12 @@ namespace Library.API.Controllers
                 return BadRequest();
             }
 
-            if (!_typeHelperService.TypeHasProperties<AuthorDto>(authorsResourceParameters.Fields))
+            if (authorsResourceParameters.Fields != null)
             {
-                return BadRequest();
+                if (!_typeHelperService.TypeHasProperties<AuthorDto>(authorsResourceParameters.Fields))
+                {
+                    return BadRequest();
+                }
             }
 
             var authorsFromRepo = _libraryRepository.GetAuthors(authorsResourceParameters);
@@ -112,22 +115,18 @@ namespace Library.API.Controllers
         }
 
         [HttpGet("{id}",Name ="GetAuthor")]
-        public ActionResult GetAuthor(Guid id)
+        public ActionResult GetAuthor(Guid id, [FromQuery] string fields)
         {
-          // since we added a exception handler middleware we do not need try-catch anymore
-          //  try
-          //  {
-                var authorFromRepo = _libraryRepository.GetAuthor(id);
+            if (!_typeHelperService.TypeHasProperties<AuthorDto>(fields))
+                return BadRequest();
 
-                if (authorFromRepo == null)
-                    return NotFound();
+            var authorFromRepo = _libraryRepository.GetAuthor(id);
 
-                var author = Mapper.Map<AuthorDto>(authorFromRepo);
-                return Ok(author);
-          //  }catch(Exception e)
-          //  {
-               // return StatusCode(500, "An unexpected error happened. Try again later");
-          //  }
+            if (authorFromRepo == null)
+                return NotFound();
+
+            var author = Mapper.Map<AuthorDto>(authorFromRepo);
+            return Ok(author.ShapeData(fields));
         }
 
 
