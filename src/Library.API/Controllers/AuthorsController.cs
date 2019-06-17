@@ -3,6 +3,7 @@ using Library.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using AutoMapper;
 using Library.API.Entities;
 using Library.API.Helpers;
@@ -126,7 +127,11 @@ namespace Library.API.Controllers
                 return NotFound();
 
             var author = Mapper.Map<AuthorDto>(authorFromRepo);
-            return Ok(author.ShapeData(fields));
+            var links = CreateLinksForAuthor(id, fields);
+            var linkedResourceForReturn = author.ShapeData(fields) as IDictionary<string,object>;
+
+            linkedResourceForReturn.Add("links",links);
+            return Ok(linkedResourceForReturn);
         }
 
 
@@ -154,7 +159,10 @@ namespace Library.API.Controllers
             }
 
             var authorToReturn = Mapper.Map<AuthorDto>(authorEntity);
-            return CreatedAtRoute("GetAuthor", new { id = authorToReturn.Id}, authorToReturn);
+            var links = CreateLinksForAuthor(authorToReturn.Id, null);
+            var linkedResourceToReturn = authorToReturn.ShapeData(null) as IDictionary<string, object>;
+            linkedResourceToReturn.Add("links",linkedResourceToReturn);
+            return CreatedAtRoute("GetAuthor", new { id = authorToReturn.Id}, linkedResourceToReturn);
         }
 
         //[HttpGet("{id}")]
@@ -169,7 +177,7 @@ namespace Library.API.Controllers
         //}
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}",Name = "DeleteAuthor")]
         public IActionResult DeleteAuthor(Guid id)
         {
             var authorFromRepo = _libraryRepository.GetAuthor(id);
@@ -182,6 +190,47 @@ namespace Library.API.Controllers
                 throw new Exception($"Author with author id {id} cannot be deleted");
 
             return NoContent();
+        }
+
+        private IEnumerable<LinkDto> CreateLinksForAuthor(Guid id, string fields)
+        {
+            var links = new List<LinkDto>();
+            if (string.IsNullOrWhiteSpace(fields))
+            {
+                links.Add(
+                    new LinkDto(_urlHelper.Link("GetAuthor",new {id = id}),
+                        "self",
+                        "GET"));
+            }
+            else
+            {
+
+                links.Add(
+                    new LinkDto(_urlHelper.Link("GetAuthor", new
+                        {
+                            id = id,
+                            fields = fields
+                        }),
+                        "self",
+                        "GET"));
+            }
+
+
+            links.Add(
+                new LinkDto(_urlHelper.Link("DeleteAuthor", new { id = id }),
+                    "delete_author",
+                    "DELETE"));
+
+            links.Add(
+                new LinkDto(_urlHelper.Link("CreateBookForAuthor", new { id = id }),
+                    "create_book_for_author",
+                    "POST"));
+
+
+
+            
+            return links;
+
         }
     }
 }
